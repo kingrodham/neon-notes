@@ -2,6 +2,12 @@
 
 A personal blogging application with a futuristic dark interface, mint accents, and responsive layouts. Built as a web-development capstone while learning Node.js, Express, and EJS.
 
+## Live Demo
+
+[Try Neon Notes](https://neon-notes.onrender.com)
+
+The free hosting service may take a moment to wake up after inactivity. Demo posts are shared and reset when the server restarts.
+
 ## Features
 
 - Create posts with a title and body.
