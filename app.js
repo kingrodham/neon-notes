@@ -8,6 +8,13 @@ import { fileURLToPath } from 'node:url';
 import { hashPassword, verifyPassword } from './lib/passwords.js';
 
 const text = (value) => typeof value === 'string' ? value.trim() : '';
+function validEmail(email) {
+  if (email.length > 254 || /\s/.test(email)) return false;
+  const parts = email.split('@');
+  if (parts.length !== 2 || !parts[0] || !parts[1]) return false;
+  const domain = parts[1];
+  return domain.includes('.') && !domain.startsWith('.') && !domain.endsWith('.');
+}
 const validId = (id) => /^[1-9]\d{0,9}$/.test(id) && Number(id) <= 2147483647;
 
 export async function createApp({ pool, sessionSecret, production = false, authLimit = 20 }) {
@@ -79,7 +86,7 @@ export async function createApp({ pool, sessionSecret, production = false, authL
     const displayName = text(req.body.displayName);
     const password = typeof req.body.password === 'string' ? req.body.password : '';
     const values = { email, displayName };
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || !displayName || displayName.length > 60 || password.length < 12 || password.length > 128) {
+    if (!validEmail(email) || !displayName || displayName.length > 60 || password.length < 12 || password.length > 128) {
       return res.status(400).render('auth', { mode: 'register', values, error: 'Enter a name (1–60 characters), a valid email and a password of 12–128 characters.' });
     }
     try {
