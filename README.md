@@ -6,7 +6,9 @@ A private blogging application with a futuristic dark interface, mint accents an
 
 [Neon Notes](https://neon-notes.onrender.com)
 
-The PostgreSQL/authentication upgrade is prepared on the `feature/postgres-auth` branch. The existing live service keeps its previous behaviour until this branch is deployed with its database and environment variables. Free web services can take time to wake after inactivity.
+The live application uses PostgreSQL-backed accounts, posts and sessions. Registration, login and private post creation/editing/deletion were verified on the hosted service on 27 October 2026. Free web services can take time to wake after inactivity.
+
+**Hosting lifecycle:** the current free Render PostgreSQL instance expires on **26 November 2026**. Upgrade it or export/migrate its data before that date to keep the application working and preserve records. No paid plan has been activated.
 
 ## Features
 
@@ -26,7 +28,6 @@ Requires Node.js 24+, npm and PostgreSQL 13+ (tested locally with PostgreSQL 18)
 ```bash
 git clone https://github.com/kingrodham/neon-notes.git
 cd neon-notes
-git switch feature/postgres-auth
 npm ci
 ```
 
@@ -53,21 +54,21 @@ npm start
 
 Open http://localhost:3000 (or your configured PORT). Startup creates the tables automatically before accepting requests. `npm run migrate` can initialise the schema separately; it is safe to repeat. `npm run dev` restarts the app after source changes. `.env` is ignored by Git.
 
-## Deploy on the existing Render service
+## Deployment configuration
 
-Do this before merging/deploying the upgrade, so auto-deploy does not start without a database:
+The existing Render service is configured with the database connection, a generated session secret, production mode and the `/health` check. For a new deployment or migration, follow these steps:
 
 1. Create a Render PostgreSQL database in the same region as the existing web service. Choose a plan deliberately: free databases have lifecycle/retention limits; check the current Render terms and arrange backups or an appropriate paid plan for lasting data.
 2. In the existing **neon-notes** web service's Environment settings, set `DATABASE_URL` to the database's **Internal Database URL**. Never paste credentials into source code, GitHub issues or the README.
 3. Generate and set `SESSION_SECRET` (32+ random characters), and set `NODE_ENV=production`.
 4. Keep Build Command `npm ci`, Start Command `npm start`, and set Health Check Path `/health`.
-5. Merge the upgrade branch and deploy. Startup applies the additive schema before serving pages. Verify registration, login, create/edit/delete and sign-out on HTTPS.
+5. Deploy the main branch. Startup applies the additive schema before serving pages. Verify registration, login, create/edit/delete and sign-out on HTTPS.
 
 The pool honours PostgreSQL connection-string TLS options. For external providers, use the provider's verified TLS configuration; do not disable certificate verification. The supplied Render Internal Database URL uses Render's private network.
 
 ### Alternative: a separate preview deployment
 
-`render.yaml` defines a **new** `neon-notes-auth` service and a new `neon-notes-db` database, with the connection string linked automatically and a generated session secret. Use **New → Blueprint** on Render and choose this branch. This does not upgrade the existing neon-notes service automatically. Review proposed resources/plans before creating them. The blueprint requests free plans and may need adjustment for availability or account limits.
+`render.yaml` defines a **new** `neon-notes-auth` service and a new `neon-notes-db` database, with the connection string linked automatically and a generated session secret. Use **New → Blueprint** on Render and choose the main branch. This does not upgrade the existing neon-notes service automatically. Review proposed resources/plans before creating them. The blueprint requests free plans and may need adjustment for availability or account limits.
 
 ## Tests
 
