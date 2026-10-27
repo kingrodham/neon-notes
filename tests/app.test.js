@@ -2,8 +2,8 @@ import 'dotenv/config';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
-import { createPool, migrate } from '../lib/database.js';
-import { createApp } from '../app.js';
+import { createPool, migrate } from '../src/lib/database.js';
+import { createApp } from '../src/app.js';
 
 const secret = 'integration-test-secret-with-more-than-32-characters';
 function token(response) {

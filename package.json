@@ -2,10 +2,10 @@
   "name": "neon-notes",
   "version": "1.0.0",
   "description": "A private blogging app with PostgreSQL persistence, account authentication and a responsive neon interface.",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
     "migrate": "node scripts/migrate.js",
     "test": "node --test --test-concurrency=1"
   },

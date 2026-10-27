@@ -27,9 +27,9 @@ export async function createApp({ pool, sessionSecret, production = false, authL
   if (production) app.set('trust proxy', 1);
   app.disable('x-powered-by');
   app.set('view engine', 'ejs');
-  app.set('views', fileURLToPath(new URL('./views', import.meta.url)));
+  app.set('views', fileURLToPath(new URL('../views', import.meta.url)));
   app.use(helmet());
-  app.use(express.static(fileURLToPath(new URL('./public', import.meta.url))));
+  app.use(express.static(fileURLToPath(new URL('../public', import.meta.url))));
   app.get('/health', async (req, res) => {
     await pool.query('SELECT 1');
     res.json({ status: 'ok' });
