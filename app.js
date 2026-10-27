@@ -34,11 +34,16 @@ export async function createApp({ pool, sessionSecret, production = false, authL
     await pool.query('SELECT 1');
     res.json({ status: 'ok' });
   });
+  // Public account pages must use HTTPS in production. Health checks remain available.
+  app.use((req, res, next) => {
+    if (production && !req.secure) return res.status(400).send('Please use HTTPS to access Neon Notes.');
+    next();
+  });
   app.use(express.urlencoded({ extended: false, limit: '128kb' }));
   app.use(session({
     name: 'neon.sid', store, secret: sessionSecret,
     resave: false, saveUninitialized: false,
-    cookie: { httpOnly: true, secure: production, sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 },
+    cookie: { httpOnly: true, secure: 'auto', sameSite: 'lax', maxAge: 7 * 24 * 60 * 60 * 1000 },
   }));
   app.use(async (req, res, next) => {
     res.set('Cache-Control', 'no-store');

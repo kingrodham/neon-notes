@@ -127,6 +127,7 @@ test('account and post lifecycle against a real PostgreSQL database', async t =>
   await t.test('production cookies require HTTPS', async () => {
     const secureApp = await createApp({ pool, sessionSecret: secret, production: true });
     try {
+      await request(secureApp).get('/login').expect(400);
       const page = await request(secureApp).get('/login').set('X-Forwarded-Proto', 'https').expect(200);
       assert.match(page.headers['set-cookie'][0], /; Secure/);
     } finally { secureApp.locals.sessionStore.close(); }
