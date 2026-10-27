@@ -9,44 +9,47 @@
 <body>
   <a class="skip-link" href="#workspace">Skip to content</a>
   <main>
-    <header class="topbar">
-      <a class="brand" href="/" aria-label="Neon Notes home"><span class="brand-icon" aria-hidden="true">N</span> NEON<span class="muted">/</span>NOTES</a>
-      <span class="status"><span aria-hidden="true"></span> YOUR SPACE TO CREATE</span>
-    </header>
+    <%- include('partials/nav') %>
     <section class="hero">
       <p class="eyebrow">A PERSONAL CORNER OF THE INTERNET</p>
       <h1>Small thoughts.<br><span>Infinite possibilities.</span></h1>
       <p class="intro">Capture an idea. Tell a story. Make a little space for what’s on your mind.</p>
       <div class="hero-orbit" aria-hidden="true"><span>✦</span></div>
     </section>
+    <% if (!user) { %>
+      <section class="panel welcome-panel" id="workspace"><p class="eyebrow">A SPACE OF YOUR OWN</p><h2>Your notes, saved for the next visit.</h2><p class="muted">Create an account to write, edit and keep your personal collection. Your posts are visible only to you.</p><div class="welcome-actions"><a class="primary" href="/register">Start your collection ↗</a><a class="text-link" href="/login">Already a member? Sign in</a></div></section>
+    <% } else { %>
     <div class="workspace" id="workspace">
       <section class="composer panel" aria-labelledby="compose-title">
         <div class="section-heading"><h2 id="compose-title">Write something new</h2><span class="symbol" aria-hidden="true">↗</span></div>
         <p class="muted">Every good story starts with a thought.</p>
+        <% if (error) { %><p class="form-error" role="alert"><%= error %></p><% } %>
         <form action="/posts" method="POST" class="editor-form">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
           <label for="title">POST TITLE</label>
-          <input id="title" type="text" name="title" placeholder="Give your idea a name…" required>
+          <input id="title" type="text" name="title" placeholder="Give your idea a name…" maxlength="160" value="<%= values.title || '' %>" required>
           <label for="content">YOUR STORY</label>
-          <textarea id="content" name="content" rows="8" placeholder="What’s on your mind?" required></textarea>
+          <textarea id="content" name="content" rows="8" placeholder="What’s on your mind?" maxlength="20000" required><%= values.content || '' %></textarea>
           <button class="primary" type="submit">Publish post <span aria-hidden="true">↗</span></button>
         </form>
-        <p class="storage-note">Posts stay here until the server restarts.</p>
+        <p class="storage-note">Your posts are saved to your account and visible only to you.</p>
       </section>
       <section class="feed" aria-labelledby="feed-title">
         <div class="section-heading feed-heading"><h2 id="feed-title">Your latest thoughts</h2><span class="count"><%= posts.length %> <%= posts.length === 1 ? 'POST' : 'POSTS' %></span></div>
         <% if (posts.length === 0) { %>
           <div class="empty panel"><span class="empty-mark" aria-hidden="true">✧</span><p class="eyebrow">A FRESH START</p><h3>Your next idea belongs here.</h3><p>Write your first post and watch this space<br class="desktop-break"> become a collection of you.</p><a href="#title" class="text-link">Start writing <span aria-hidden="true">↗</span></a></div>
         <% } else { %>
-          <% posts.slice().reverse().forEach(function (post) { %>
+          <% posts.forEach(function (post) { %>
             <article class="post-card panel">
               <div class="post-meta"><span>NOTE / <%= String(post.id).padStart(2, '0') %></span><span aria-hidden="true">✦</span></div>
               <h3><%= post.title %></h3><p class="post-content"><%= post.content %></p>
-              <div class="post-actions"><a class="edit-link" href="/posts/<%= post.id %>/edit" aria-label="Edit post: <%= post.title %>">Edit post <span aria-hidden="true">↗</span></a><form action="/posts/<%= post.id %>/delete" method="POST"><button class="delete" type="submit" aria-label="Delete post: <%= post.title %>">Delete</button></form></div>
+              <div class="post-actions"><a class="edit-link" href="/posts/<%= post.id %>/edit" aria-label="Edit post: <%= post.title %>">Edit post <span aria-hidden="true">↗</span></a><form action="/posts/<%= post.id %>/delete" method="POST"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="delete" type="submit" aria-label="Delete post: <%= post.title %>">Delete</button></form></div>
             </article>
           <% }); %>
         <% } %>
       </section>
     </div>
+    <% } %>
     <footer class="footer"><span>NEON / NOTES</span><span>Made for thoughts that deserve a little space.</span></footer>
   </main>
 </body>
