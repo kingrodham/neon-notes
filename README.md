@@ -6,7 +6,27 @@
 
 Built by **Rodham Makwara** as a full-stack portfolio project using **Node.js, Express, EJS and PostgreSQL**.
 
-## What you can do
+## Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [How it works](#how-it-works)
+- [Technology](#technology)
+- [Project structure](#project-structure)
+- [Run locally](#run-locally)
+- [Commands](#commands)
+- [Tests](#tests)
+- [Security and hosting](#security-and-hosting)
+- [Roadmap](#roadmap)
+- [Author](#author)
+
+## Overview
+
+Neon Notes provides one place to capture short ideas and longer personal posts, then return to refine them later. The project grew from an in-memory CRUD capstone into an account-based application with durable storage and private collections.
+
+The main engineering focus is following a user's request from a form through validation, authentication, ownership checks and database storage, then rendering the result clearly.
+
+## Features
 
 - Create an account, sign in and sign out.
 - Write posts with a title and body, then edit or delete them.
@@ -18,12 +38,13 @@ Posts are private account content; publishing a post saves it to your collection
 
 ## How it works
 
-```text
-Browser / EJS forms
-        ↓
-Express middleware → session and CSRF checks → account and post routes
-        ↓
-PostgreSQL → accounts, owner-linked posts and sessions
+```mermaid
+flowchart LR
+    A[Browser and EJS forms] --> B[Express middleware]
+    B --> C[Authentication and owner-scoped routes]
+    C --> D[(PostgreSQL)]
+    C --> E[Rendered HTML response]
+    E --> A
 ```
 
 The backend validates input and checks the signed-in user's ownership before accessing a post. PostgreSQL keeps the data outside the application process, so restarting the web server does not clear it. Passwords are stored as salted scrypt hashes.
@@ -43,38 +64,17 @@ The backend validates input and checks the signed-in user's ownership before acc
 ## Project structure
 
 ```text
-neon-notes/
-├── .github/workflows/test.yml  # Automated integration checks
-├── database/
-│   └── schema.sql             # Account, post and session tables
-├── docs/
-│   ├── deployment.md          # Render setup and hosting lifecycle
-│   └── security.md            # Protections and current limitations
-├── public/
-│   └── styles.css             # Shared responsive neon theme
-├── scripts/
-│   └── migrate.js             # Standalone database initialisation
-├── src/
-│   ├── app.js                 # Middleware, authentication and post routes
-│   ├── server.js              # Startup, configuration and shutdown
-│   └── lib/
-│       ├── database.js        # Connection pool and schema initialisation
-│       └── passwords.js       # Password hashing and verification
-├── tests/
-│   └── app.test.js            # Database-backed integration tests
-├── views/
-│   ├── partials/nav.ejs       # Shared account navigation
-│   ├── auth.ejs               # Registration and sign-in
-│   ├── edit.ejs               # Post editor
-│   ├── error.ejs              # Friendly error screen
-│   └── index.ejs              # Landing page and private workspace
-├── .env.example               # Safe configuration template
-├── .gitignore                 # Excludes secrets and generated files
-├── package.json               # Dependencies and project commands
-├── package-lock.json          # Exact dependency versions
-├── render.yaml                # Optional separate Render preview setup
-└── README.md
+src/          Express application, startup and shared database/password code
+database/     PostgreSQL table definitions and indexes
+views/        EJS pages and shared navigation
+public/       Browser-facing styles
+scripts/      Database initialisation command
+tests/        PostgreSQL integration tests
+docs/         Architecture, security and deployment guides
+.github/      GitHub Actions workflow
 ```
+
+Root-level files configure npm, Git and Render. See the [full file tree, database model and routes](docs/architecture.md).
 
 ## Run locally
 
@@ -142,6 +142,19 @@ Read [security and limitations](docs/security.md) for the implemented protection
 
 See [deployment instructions](docs/deployment.md) for Render configuration. The free web service may sleep when inactive. **The current free database expires on 26 November 2026** and must be upgraded or migrated before then to preserve records and keep the service working.
 
-## What this project demonstrates
+## Roadmap
+
+- [ ] Verified-email registration and secure password recovery.
+- [ ] Search and pagination for larger post collections.
+- [ ] Shared rate-limit storage for deployments with multiple instances.
+- [ ] Optional public publishing with explicit visibility controls.
+
+These are planned improvements, not current features. See [architecture and design decisions](docs/architecture.md) for the current implementation.
+
+## Author
+
+**Rodham Makwara** · [GitHub](https://github.com/kingrodham)
+
+### What this project demonstrates
 
 Server-rendered full-stack development, form handling, relational data modelling, persistent sessions, authentication versus authorisation, secure ownership checks, integration testing and responsive interface design. Developed with assistance for implementation, explanations, testing and visual design.
